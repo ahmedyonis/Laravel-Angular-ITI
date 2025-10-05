@@ -1,0 +1,53 @@
+<!-- src/app/auth/login/login.html -->
+<div class="row justify-content-center mt-5">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header bg-danger text-white text-center">
+        <h4>Login</h4>
+      </div>
+      <div class="card-body">
+        <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value)">
+          
+          <div class="mb-3">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              name="email"
+              required
+              ngModel
+              #email="ngModel"
+            />
+            <div class="alert alert-danger mt-1" [hidden]="email.valid || email.pristine">
+              Email is required.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              name="password"
+              required
+              ngModel
+              #password="ngModel"
+            />
+            <div class="alert alert-danger mt-1" [hidden]="password.valid || password.pristine">
+              Password is required.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100" [disabled]="loginForm.invalid">
+            Login
+          </button>
+        </form>
+        <div class="text-center mt-3">
+          <small>Don't have an account? <a routerLink="/register">Register</a></small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
