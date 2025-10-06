@@ -1,4 +1,3 @@
-// src/app/shared/header/header.component.ts
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';

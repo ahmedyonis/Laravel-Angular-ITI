@@ -1,4 +1,3 @@
-// src/app/pages/booking/booking.component.ts
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {

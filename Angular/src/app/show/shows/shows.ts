@@ -1,4 +1,3 @@
-// src/app/pages/shows/shows.component.ts
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Show, ShowService } from '../../services/show';
@@ -24,12 +23,4 @@ export class ShowsComponent implements OnInit {
     });
   }
 
-  // bookNow(showId: number): void {
-  //   if (this.authService.isLoggedIn()) {
-  //     // لاحقًا: نروح لصفحة الحجز
-  //     alert(`Booking for show ID: ${showId}`);
-  //   } else {
-  //     this.router.navigate(['/login']);
-  //   }
-  // }
 }
