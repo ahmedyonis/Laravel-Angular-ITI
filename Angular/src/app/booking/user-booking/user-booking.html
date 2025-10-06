@@ -1,0 +1,62 @@
+<!-- src/app/pages/my-bookings/my-bookings.component.html -->
+<div class="container mt-4">
+  <h2 class="text-center mb-4 text-danger">My Bookings</h2>
+
+  @if (loading) {
+    <div class="text-center">
+      <p>Loading your bookings...</p>
+    </div>
+  } @else if (bookings.length === 0) {
+    <div class="text-center">
+      <p>You have no bookings yet.</p>
+      <a routerLink="/shows" class="btn btn-primary mt-3">Browse Shows</a>
+    </div>
+  } @else {
+    <div class="row">
+      @for (booking of bookings; track booking.id) {
+        <div class="col-12 mb-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{ booking.show.title }}</h5>
+              <p class="text-muted">
+                <strong>Date:</strong> {{ booking.show.show_date }}<br>
+                <strong>Time:</strong> {{ booking.show.show_time }}
+              </p>
+
+              <p><strong>Seats:</strong> 
+                @for (seat of booking.seats; track seat.id) {
+                  <span class="badge bg-secondary me-1">{{ seat.seat_number }}</span>
+                }
+              </p>
+
+              @if (booking.foodItems && booking.foodItems.length > 0) {
+                <p><strong>Food:</strong>
+                  @for (item of booking.foodItems; track item.id) {
+                    <span class="badge bg-success me-1">{{ item.name }} (x{{ item.quantity }})</span>
+                  }
+                </p>
+              }
+
+              <p><strong>Total:</strong> ${{ booking.total_amount }}</p>
+              <p><strong>Status:</strong> 
+                <span [class.text-success]="booking.status === 'confirmed'"
+                      [class.text-danger]="booking.status === 'cancelled'">
+                  {{ booking.status}}
+                </span>
+              </p>
+
+              @if (booking.status === 'confirmed') {
+                <button
+                  class="btn btn-outline-danger"
+                  (click)="cancelBooking(booking.id)"
+                >
+                  Cancel Booking
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -19,7 +19,6 @@ class UserSeeder extends Seeder
             'role' => 'admin'
         ]);
 
-        // مستخدم عادي
         User::create([
             'name' => 'Ahmed',
             'email' => 'ahmed@user.com',

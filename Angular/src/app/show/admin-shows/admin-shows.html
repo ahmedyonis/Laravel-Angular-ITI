@@ -1,0 +1,211 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4 text-danger">Admin Dashboard</h2>
+
+  <!-- التبويبات -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="activeTab === 'shows'"
+        (click)="switchTab('shows')"
+        style="cursor: pointer;"
+      >
+        Manage Shows
+      </a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="activeTab === 'bookings'"
+        (click)="switchTab('bookings')"
+        style="cursor: pointer;"
+      >
+        Manage Bookings
+      </a>
+    </li>
+  </ul>
+
+  <!-- إدارة العروض -->
+  @if (activeTab === 'shows') {
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4>Existing Shows</h4>
+      <button class="btn btn-success" (click)="toggleShowForm()">
+        {{ showFormVisible ? 'Cancel' : 'Add New Show' }}
+      </button>
+    </div>
+
+    <!-- نموذج إضافة عرض جديد -->
+    @if (showFormVisible) {
+      <div class="card mb-4">
+        <div class="card-header bg-light">
+          Add New Show
+        </div>
+        <div class="card-body">
+          <form #showForm="ngForm" (ngSubmit)="createShow(showForm.value)">
+
+            <div class="mb-3">
+              <label class="form-label">Show Title</label>
+              <input
+                type="text"
+                class="form-control"
+                name="title"
+                required
+                ngModel
+                #title="ngModel"
+              />
+              <div class="alert alert-danger mt-1" [hidden]="title.valid || title.pristine">
+                Title is required.
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">First Class Price</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="price_first_class"
+                  required
+                  min="0"
+                  ngModel
+                  #price_first_class="ngModel"
+                />
+                <div class="alert alert-danger mt-1" [hidden]="price_first_class.valid || price_first_class.pristine">
+                  Valid price required.
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Second Class Price</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="price_second_class"
+                  required
+                  min="0"
+                  ngModel
+                  #price_second_class="ngModel"
+                />
+                <div class="alert alert-danger mt-1" [hidden]="price_second_class.valid || price_second_class.pristine">
+                  Valid price required.
+                </div>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Standard Price</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="price_standard"
+                  required
+                  min="0"
+                  ngModel
+                  #price_standard="ngModel"
+                />
+                <div class="alert alert-danger mt-1" [hidden]="price_standard.valid || price_standard.pristine">
+                  Valid price required.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Image (Optional)</label>
+              <input
+                type="file"
+                class="form-control"
+                name="image"
+                (change)="onFileChange($event)"
+                accept="image/*"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="showForm.invalid"
+            >
+              Create Show
+            </button>
+          </form>
+        </div>
+      </div>
+    }
+
+    <!-- قائمة العروض -->
+    @if (shows.length === 0) {
+      <div class="text-center">
+        <p>No shows available.</p>
+      </div>
+    } @else {
+      <div class="row">
+        @for (show of shows; track show.id) {
+          <div class="col-md-4 mb-4">
+            <div class="card">
+              @if (show.image) {
+                <img [src]="show.image" class="card-img-top" style="height: 200px; object-fit: cover;">
+              } @else {
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <span class="text-muted">No Image</span>
+                </div>
+              }
+              <div class="card-body">
+                <h5>{{ show.title }}</h5>
+                <p class="mb-1"><strong>First:</strong> ${{ show.price_first_class }}</p>
+                <p class="mb-1"><strong>Second:</strong> ${{ show.price_second_class }}</p>
+                <p class="mb-1"><strong>Standard:</strong> ${{ show.price_standard }}</p>
+                <p class="text-muted">{{ show.show_date }} at {{ show.show_time }}</p>
+                <button class="btn btn-danger btn-sm w-100" (click)="deleteShow(show.id)">Delete Show</button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- إدارة الحجوزات -->
+  @if (activeTab === 'bookings') {
+    <h4>Bookings List</h4>
+    @if (bookings.length === 0) {
+      <p class="text-center">No bookings available.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Show</th>
+              <th>Seats</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (booking of bookings; track booking.id) {
+              <tr>
+                <td>{{ booking.user?.name || 'N/A' }}<br><small>{{ booking.user?.email || '' }}</small></td>
+                <td>{{ booking.show?.title || 'N/A' }}<br>{{ booking.show?.show_date || '' }}</td>
+                <td>
+                  @for (seat of booking.seats; track seat.seat_number) {
+                    <span class="badge bg-secondary me-1">{{ seat.seat_number }}</span>
+                  }
+                </td>
+                <td>${{ booking.total_amount || '0.00' }}</td>
+                <td>
+                  <span [class.text-success]="booking.status === 'confirmed'"
+                        [class.text-danger]="booking.status === 'cancelled'">
+                    {{ booking.status || 'N/A' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm" (click)="deleteBooking(booking.id)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

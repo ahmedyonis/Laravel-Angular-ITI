@@ -65,4 +65,7 @@ export class AuthService {
     const user = this.currentUserSubject.value;
     return user?.role === 'admin';
   }
+  getToken(): string | null {
+  return localStorage.getItem('token');
+  }
 }

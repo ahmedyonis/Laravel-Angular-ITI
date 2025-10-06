@@ -13,13 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // تسجيل middleware الـ admin
+        // تسجيل middleware الـ admin كـ alias
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
 
         // تمكين CORS (ضروري لـ Angular)
-        $middleware->use(HandleCors::class);
+        $middleware->use([HandleCors::class]); // <-- لاحظ المصفوفة هنا
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

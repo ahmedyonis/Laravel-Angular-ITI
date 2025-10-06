@@ -1,4 +1,3 @@
-<!-- src/app/shared/header/header.component.html -->
 <nav class="navbar navbar-expand-lg bg-danger">
   <div class="container-fluid">
     <a class="navbar-brand text-white fw-bold fs-3" routerLink="/">ITI Theater Project</a>
@@ -7,8 +6,15 @@
         <button class="btn btn-outline-light me-2" routerLink="/login">Login</button>
         <button class="btn btn-light" routerLink="/register">Register</button>
       } @else {
-        <span class="text-white me-3">Hello, {{ userName }}</span>
-        <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+        @if (authService.isAdmin()) {
+            <a routerLink="/admin" class="btn btn-outline-light me-2">Admin</a>
+            <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+          }
+        @else {
+        <a routerLink="/my-bookings" class="text-white me-3 text-decoration-none">
+          Hello, {{ userName }}
+        </a>
+        <button class="btn btn-outline-light" (click)="logout()">Logout</button>}
       }
     </div>
   </div>

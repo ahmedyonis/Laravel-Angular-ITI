@@ -12,7 +12,13 @@ class AdminShowController extends Controller
     // عرض كل العروض (للـ admin)
     public function index(): JsonResponse
     {
-        return response()->json(Show::all());
+        $shows = Show::all();
+        $shows->each(function ($show) {
+        if ($show->image) {
+            $show->image = asset('storage/shows/' . $show->image);
+        }
+    });
+    return response()->json($shows);
     }
 
     // إضافة عرض جديد
@@ -20,50 +26,46 @@ class AdminShowController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'show_date' => 'required|date',
-            'show_time' => 'required|date_format:H:i',
             'price_first_class' => 'required|numeric|min:0',
             'price_second_class' => 'required|numeric|min:0',
             'price_standard' => 'required|numeric|min:0',
-            'total_seats' => 'required|integer|min:1|max:200',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $data = $request->only([
-            'title', 'show_date', 'show_time',
-            'price_first_class', 'price_second_class', 'price_standard',
-            'total_seats'
-        ]);
+        'title', 'price_first_class', 'price_second_class', 'price_standard'
+    ]);
 
-        // رفع الصورة (اختياري)
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('shows', 'public');
-            $data['image'] = basename($path);
-        }
+    // تحديد التاريخ والعدد تلقائيًا
+    $data['show_date'] = now()->addDays(7)->toDateString(); // مثلاً بعد أسبوع
+    $data['show_time'] = '19:00:00';
+    $data['total_seats'] = 50;
 
-        $show = Show::create($data);
-
-        return response()->json($show, 201);
+    if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('shows', 'public');
+        $data['image'] = basename($path);
     }
+
+    $show = Show::create($data);
+    return response()->json($show, 201);
+}
 
     // تعديل عرض
     public function update(Request $request, Show $show): JsonResponse
     {
         $request->validate([
             'title' => 'sometimes|string|max:255',
-            'show_date' => 'sometimes|date',
-            'show_time' => 'sometimes|date_format:H:i',
+
             'price_first_class' => 'sometimes|numeric|min:0',
             'price_second_class' => 'sometimes|numeric|min:0',
             'price_standard' => 'sometimes|numeric|min:0',
-            'total_seats' => 'sometimes|integer|min:1|max:200',
+
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $data = $request->only([
-            'title', 'show_date', 'show_time',
+            'title',
             'price_first_class', 'price_second_class', 'price_standard',
-            'total_seats'
         ]);
 
         if ($request->hasFile('image')) {

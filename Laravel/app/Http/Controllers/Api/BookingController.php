@@ -15,12 +15,25 @@ class BookingController extends Controller
     // عرض حجوزات المستخدم
     public function index(): JsonResponse
     {
-        $bookings = auth()->user()->bookings()
-            ->with(['show:id,title,show_date,show_time', 'seats:id,seat_number,seat_class'])
-            ->get();
+    $bookings = auth()->user()->bookings()
+        ->with([
+            'show:id,title,show_date,show_time',
+            'seats:id,seat_number,seat_class',
+            'foodItems:id,name,price' // ← أضف foodItems هنا
+        ])
+        ->get()
+        ->map(function ($booking) {
+            // إضافة الكمية (quantity) لكل صنف أكل
+            $booking->foodItems->each(function ($food) use ($booking) {
+                $food->quantity = $booking->foodItems
+                    ->firstWhere('id', $food->id)
+                    ->pivot->quantity;
+            });
+            return $booking;
+        });
 
-        return response()->json($bookings);
-    }
+    return response()->json($bookings);
+}
 
     // إنشاء حجز جديد
     public function store(Request $request): JsonResponse
@@ -116,4 +129,27 @@ class BookingController extends Controller
 
         return response()->json(['message' => 'Cancelled successfully']);
     }
+
+
+    public function adminIndex(): JsonResponse
+{
+    $bookings = Booking::with([
+        'user:id,name,email',
+        'show:id,title,show_date,show_time',
+        'seats:id,seat_number,seat_class'
+    ])->get();
+
+    return response()->json($bookings);
+}
+
+    public function adminDestroy(Booking $booking): JsonResponse
+{
+    DB::transaction(function () use ($booking) {
+        $booking->update(['status' => 'cancelled']);
+        Seat::whereIn('id', $booking->seats->pluck('id'))->update(['is_booked' => false]);
+        $booking->delete(); // أو just update status
+    });
+
+    return response()->json(['message' => 'Booking deleted successfully']);
+}
 }
