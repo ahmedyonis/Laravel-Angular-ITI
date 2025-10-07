@@ -6,9 +6,80 @@ use App\Http\Controllers\Controller;
 use App\Models\Show;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Models\Seat;
 
 class AdminShowController extends Controller
 {
+    private function createSeatsForShow($show): void
+{
+    $seatsData = [];
+
+    // A1 - A10 → first class
+    for ($i = 1; $i <= 10; $i++) {
+        $seatsData[] = [
+            'show_id' => $show->id,
+            'seat_number' => 'A' . $i,
+            'seat_class' => 'first',
+            'is_booked' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+    }
+
+    // B1 - B10 → second class
+    for ($i = 1; $i <= 10; $i++) {
+        $seatsData[] = [
+            'show_id' => $show->id,
+            'seat_number' => 'B' . $i,
+            'seat_class' => 'second',
+            'is_booked' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+    }
+
+    // C1 - C10 → second class (حسب هيكلك السابق)
+    for ($i = 1; $i <= 10; $i++) {
+        $seatsData[] = [
+            'show_id' => $show->id,
+            'seat_number' => 'C' . $i,
+            'seat_class' => 'second',
+            'is_booked' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+    }
+
+    // D1 - D10 → standard
+    for ($i = 1; $i <= 10; $i++) {
+        $seatsData[] = [
+            'show_id' => $show->id,
+            'seat_number' => 'D' . $i,
+            'seat_class' => 'standard',
+            'is_booked' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+    }
+
+    // E1 - E10 → standard
+    for ($i = 1; $i <= 10; $i++) {
+        $seatsData[] = [
+            'show_id' => $show->id,
+            'seat_number' => 'E' . $i,
+            'seat_class' => 'standard',
+            'is_booked' => false,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+    }
+
+    // إدخال كل المقاعد دفعة واحدة
+    Seat::insert($seatsData);
+}
+    
+    
+    
     // عرض كل العروض (للـ admin)
     public function index(): JsonResponse
     {
@@ -46,9 +117,16 @@ class AdminShowController extends Controller
         $data['image'] = basename($path);
     }
 
+
+
     $show = Show::create($data);
+
+    $this->createSeatsForShow($show);
+
     return response()->json($show, 201);
 }
+
+    
 
     // تعديل عرض
     public function update(Request $request, Show $show): JsonResponse
