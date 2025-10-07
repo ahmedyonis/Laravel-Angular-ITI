@@ -159,6 +159,7 @@ class AdminShowController extends Controller
     // حذف عرض
     public function destroy(Show $show): JsonResponse
     {
+        $show->seats()->delete();
         $show->delete();
         return response()->json(['message' => 'Show deleted successfully']);
     }
