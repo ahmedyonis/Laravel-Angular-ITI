@@ -41,7 +41,7 @@
           Add New Show
         </div>
         <div class="card-body">
-          <form #showForm="ngForm" (ngSubmit)="createShow(showForm.value)">
+          <form #showForm="ngForm" (ngSubmit)="submitShowForm(showForm.value)">
 
             <div class="mb-3">
               <label class="form-label">Show Title</label>
@@ -50,7 +50,7 @@
                 class="form-control"
                 name="title"
                 required
-                ngModel
+                [(ngModel)]="newShow.title"
                 #title="ngModel"
               />
               <div class="alert alert-danger mt-1" [hidden]="title.valid || title.pristine">
@@ -67,7 +67,7 @@
                   name="price_first_class"
                   required
                   min="0"
-                  ngModel
+                  [(ngModel)]="newShow.price_first_class"
                   #price_first_class="ngModel"
                 />
                 <div class="alert alert-danger mt-1" [hidden]="price_first_class.valid || price_first_class.pristine">
@@ -83,7 +83,7 @@
                   name="price_second_class"
                   required
                   min="0"
-                  ngModel
+                  [(ngModel)]="newShow.price_second_class"
                   #price_second_class="ngModel"
                 />
                 <div class="alert alert-danger mt-1" [hidden]="price_second_class.valid || price_second_class.pristine">
@@ -99,7 +99,7 @@
                   name="price_standard"
                   required
                   min="0"
-                  ngModel
+                  [(ngModel)]="newShow.price_standard"
                   #price_standard="ngModel"
                 />
                 <div class="alert alert-danger mt-1" [hidden]="price_standard.valid || price_standard.pristine">
@@ -124,7 +124,7 @@
               class="btn btn-primary"
               [disabled]="showForm.invalid"
             >
-              Create Show
+               {{ editMode ? 'Update Show' : 'Create Show' }}
             </button>
           </form>
         </div>
@@ -154,7 +154,10 @@
                 <p class="mb-1"><strong>Second:</strong> ${{ show.price_second_class }}</p>
                 <p class="mb-1"><strong>Standard:</strong> ${{ show.price_standard }}</p>
                 <p class="text-muted">{{ show.show_date }} at {{ show.show_time }}</p>
-                <button class="btn btn-danger btn-sm w-100" (click)="deleteShow(show.id)">Delete Show</button>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-warning btn-sm flex-grow-1" (click)="editShow(show)">Edit</button>
+                  <button class="btn btn-danger btn-sm flex-grow-1" (click)="deleteShow(show.id)">Delete</button>
+                </div>
               </div>
             </div>
           </div>

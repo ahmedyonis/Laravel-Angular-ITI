@@ -37,7 +37,7 @@ Route::get('/shows/{show}', [ShowController::class, 'show']);
 // });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::apiResource('admin/shows', AdminShowController::class)->only(['index', 'store', 'destroy']);
+    Route::apiResource('admin/shows', AdminShowController::class)->only(['index', 'store','update', 'destroy']);
     Route::get('/admin/bookings', [BookingController::class, 'adminIndex']);
     Route::delete('/admin/bookings/{booking}', [BookingController::class, 'adminDestroy']);
 });

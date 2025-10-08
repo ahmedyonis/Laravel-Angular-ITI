@@ -28,6 +28,9 @@ export class AdminComponent implements OnInit {
   imageFile: File | null = null;
   showFormVisible = false;
 
+  editMode = false;
+  currentShowId: number | null = null;
+
   // --- الحجوزات ---
   bookings: any[] = [];
 
@@ -43,6 +46,14 @@ export class AdminComponent implements OnInit {
   // --- التبويبات ---
   switchTab(tab: 'shows' | 'bookings'): void {
     this.activeTab = tab;
+  }
+
+  submitShowForm(formValue: any): void {
+  if (this.editMode && this.currentShowId !== null) {
+    this.updateShow(this.currentShowId, formValue);
+  } else {
+    this.createShow(formValue);
+  }
   }
 
   // --- إدارة العروض ---
@@ -72,6 +83,8 @@ export class AdminComponent implements OnInit {
       price_standard: ''
     };
     this.imageFile = null;
+    this.editMode = false;
+    this.currentShowId = null;
   }
 
   onFileChange(event: any): void {
@@ -138,4 +151,44 @@ export class AdminComponent implements OnInit {
       });
     }
   }
+  editShow(show: ShowDetails): void {
+    console.log('Editing show:', show);
+    this.editMode = true;
+    this.currentShowId = show.id;
+    this.newShow = {
+      title: show.title || '',
+      price_first_class: show.price_first_class?.toString() || '',
+      price_second_class: show.price_second_class?.toString() || '',
+      price_standard: show.price_standard?.toString() || ''
+    };
+    this.imageFile = null;
+    this.showFormVisible = true;
+
+}
+
+updateShow(id: number, formValue: any): void {
+  const formData = new FormData();
+  formData.append('_method', 'PUT');
+  formData.append('title', formValue.title);
+  formData.append('price_first_class', formValue.price_first_class);
+  formData.append('price_second_class', formValue.price_second_class);
+  formData.append('price_standard', formValue.price_standard);
+
+  if (this.imageFile) {
+    formData.append('image', this.imageFile);
+  }
+
+  this.adminService.updateShow(id, formData).subscribe({
+    next: () => {
+      this.loadShows();
+      this.showFormVisible = false;
+      this.resetForm();
+      this.editMode = false;
+      this.currentShowId = null;
+    },
+    error: () => {
+      alert('Failed to update show.');
+    }
+  });
+}
 }
